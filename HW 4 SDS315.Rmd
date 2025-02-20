@@ -1,0 +1,245 @@
+---
+title: "HW 4 SDS 315"
+author: "aman lakhwani arl4279"
+date: "2025-02-19"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## R Markdown
+
+## **Problem 1**
+
+## **Null Hypothesis
+According to the null hypothesis, transactions made by Iron Bank personnel are marked at the same 2.4% rate as those made by other traders, indicating that any flagged trades are the consequence of typical market volatility.
+
+## **Test Statistics
+The number of deals that were flagged out of 2,021 total trades is the test statistic. This has a binomial distribution with 𝑛 = 2021 n = 2021 and 𝑝 = 0.024 p = 0.024 under H 0. Evidence against H 0 would be provided by a noticeably greater number of flagged trades, indicating possible insider trading.
+
+## **Plot
+```{r}
+library(ggplot2)
+set.seed(123)
+n_simulations <- 100000
+n_trades <- 2021
+baseline_flag_rate <- 0.024
+observed_flags <- 70
+simulated_flags <- rbinom(n_simulations, size = n_trades, prob = baseline_flag_rate)
+p_value <- mean(simulated_flags >= observed_flags)
+sim_data <- data.frame(simulated_flags)
+ggplot(sim_data, aes(x = simulated_flags)) +
+  geom_histogram(binwidth = 1, color = "black", fill = "lightblue", alpha = 0.7) +
+  geom_vline(xintercept = observed_flags, color = "red", linetype = "dashed", linewidth = 1) +
+  labs(title = "Distribution of Flagged Trades Under Null Hypothesis",
+       x = "Number of Flagged Trades",
+       y = "Frequency") +
+  theme_minimal()
+```
+
+The predicted distribution of flagged trades under the null hypothesis (a 2.4% flagging rate) is displayed in the histogram. Given that such a large quantity is rarely seen in normal circumstances, the red dashed line at 70 flagged trades is located in the right tail. This implies compelling evidence that refutes the null hypothesis.
+
+## **P Value
+```{r, message=FALSE, warning=FALSE}
+library(mosaic)
+set.seed(123)
+n_simulations <- 100000
+n_trades <- 2021
+baseline_flag_rate <- 0.024
+observed_flags <- 70
+simulated_flags <- rbinom(n_simulations, size = n_trades, prob = baseline_flag_rate)
+p_value <- mean(simulated_flags >= observed_flags)
+p_value
+```
+
+## **Conclusion
+Given that Iron Bank's trading activity is unlikely to be the result of random chance and that the observed 70 flagged trades lie in the extreme tail of the anticipated distribution, the null hypothesis seems very improbable (p-value = 0.00204).
+
+## **Problem 2**
+
+## **Null Hypothesis
+According to the null hypothesis, Gourmet Bites' rate of health code breaches is equal to the 3% citywide average, indicating that any infractions are the result of chance rather than structural problems.
+
+## **Test Statistics
+The number of health inspections that resulted in a violation out of 50 total inspections is the test statistic. This has a binomial distribution with 𝑛 = 50 n = 50 and 𝑝 = 0.03 p = 0.03 under the null hypothesis. Gourmet Bites may have a greater-than-normal violation rate if the observed number of infractions (8) is noticeably higher than anticipated.
+
+## **Plot
+```{r}
+library(ggplot2)
+set.seed(123)  
+n_simulations <- 100000  
+n_inspections <- 50  
+baseline_violation_rate <- 0.03  
+observed_violations <- 8  
+simulated_violations <- rbinom(n_simulations, size = n_inspections, prob = baseline_violation_rate)
+p_value <- mean(simulated_violations >= observed_violations)
+sim_data <- data.frame(simulated_violations)
+hist_plot <- ggplot(sim_data, aes(x = simulated_violations)) +
+  geom_histogram(binwidth = 1, color = "black", fill = "darkgreen", alpha = 0.7) +
+  geom_vline(xintercept = observed_violations, color = "red", linetype = "dashed", linewidth = 1) +
+  labs(title = "Distribution of Health Violations Under Null Hypothesis",
+       x = "Number of Violations",
+       y = "Frequency") +
+  theme_minimal()
+hist_plot
+```
+
+The predicted distribution of health infractions under the null hypothesis (3% violation rate) is displayed in the histogram. This result is uncommon under typical circumstances, as indicated by the red dashed line in the right tail at 8 infractions. This implies that Gourmet Bites could have a higher than anticipated incidence of infractions.
+
+## **P Value
+```{r, message=FALSE, warning=FALSE}
+library(mosaic)
+set.seed(123)  
+n_simulations <- 100000  
+n_inspections <- 50  
+baseline_violation_rate <- 0.03  
+observed_violations <- 8  
+simulated_violations <- rbinom(n_simulations, size = n_inspections, prob = baseline_violation_rate)
+p_value <- mean(simulated_violations >= observed_violations)
+p_value
+```
+
+## **Conclusion
+Given that the observed 8 health violations fall in the extreme tail of the expected distribution and have a very low p-value, the null hypothesis seems highly implausible. This suggests that Gourmet Bites' violation rate is unlikely to be the result of random chance and could instead point to underlying health code issues.
+
+## **Problem 3**
+```{r}
+set.seed(123)
+observed_counts <- c(85, 56, 59, 27, 13)
+county_probs <- c(0.30, 0.25, 0.20, 0.15, 0.10)
+total_jurors <- 240  
+expected_counts <- total_jurors * county_probs
+chi_sq_test <- chisq.test(observed_counts, p = county_probs)
+chi_sq_test$statistic
+chi_sq_test$p.value
+```
+
+## **Plot
+```{r}
+library(ggplot2)
+data_plot <- data.frame(
+  Group = factor(paste("Group", 1:5)),
+  Type = rep(c("Observed", "Expected"), each = 5),
+  Count = c(observed_counts, expected_counts)
+)
+
+ggplot(data_plot, aes(x = Group, y = Count, fill = Type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Observed vs. Expected Jury Counts",
+       x = "Group",
+       y = "Number of Jurors") +
+  theme_minimal()
+```
+
+## **Null Hypothesis
+According to the null hypothesis, the racial makeup of the judge's chosen jurors is the same as that of the county. Any discrepancies that are noticed are thought to be the result of chance rather than deliberate prejudice. The racial composition of empaneled juries should eventually match county demographics if jury selection is fair.
+
+## **Test Statistics
+The Chi-Square test statistic, which calculates the difference between the actual and predicted juror numbers, is the one that is employed. It is less likely that the differences happened by accident when the test statistic is bigger, which denotes a wider departure from the predicted racial distribution.
+
+## **Probability of T
+If the null hypothesis is correct, the p-value indicates the likelihood of seeing a deviation that is as extreme as or more extreme than the one that was noted. The observed jury makeup is unlikely to have happened at random, according to a low p-value.
+
+## **Conclusion
+We have compelling evidence to reject the null hypothesis since the p-value (0.014) is less than the conventional cutoff of 0.05. This implies that the racial makeup of the jurors chosen by this judge does not align with the distribution predicted by the county's demographics.
+
+There is a very little possibility that such a variation would be seen by pure chance, which raises questions about possible systematic bias in the jury selection procedure
+
+## **Problem 4**
+
+## **Part A
+```{r}
+set.seed(123)
+file_path <- "brown_sentences.txt"  
+sentences <- readLines(file_path, warn=FALSE)
+preprocess_text <- function(sentence) {
+  clean_sentence <- toupper(gsub("[^A-Za-z]", "", sentence))
+  return(clean_sentence)
+}
+clean_sentences <- sapply(sentences, preprocess_text)
+count_letters <- function(sentence) {
+  table(strsplit(sentence, "")[[1]])  
+}
+letter_counts <- lapply(clean_sentences, count_letters)
+expected_frequencies <- c(
+  A=8.17, B=1.49, C=2.78, D=4.25, E=12.70, F=2.23, G=2.02, H=6.09, I=6.97, 
+  J=0.15, K=0.77, L=4.03, M=2.41, N=6.75, O=7.51, P=1.93, Q=0.10, R=5.99, 
+  S=6.33, T=9.06, U=2.76, V=0.98, W=2.36, X=0.15, Y=1.97, Z=0.07
+)
+expected_probs <- expected_frequencies / 100
+compute_chi_squared <- function(letter_count) {
+ sentence_length <- sum(letter_count)
+  if (sentence_length == 0) return(NA)
+  expected_counts <- sentence_length * expected_probs
+  observed_counts <- as.numeric(sapply(names(expected_probs), function(x) ifelse(x %in% names(letter_count), letter_count[x], 0)))
+  chi_squared <- sum((observed_counts - expected_counts)^2 / expected_counts, na.rm=TRUE)
+  
+  return(chi_squared)
+}
+chi_squared_values <- sapply(letter_counts, compute_chi_squared, simplify=TRUE, USE.NAMES=FALSE)
+chi_squared_values <- chi_squared_values[!is.na(chi_squared_values)]
+summary(chi_squared_values)
+```
+```{r}
+library(ggplot2)
+
+# Create a histogram of the chi-squared values
+chi_sq_data <- data.frame(ChiSquared = chi_squared_values)
+
+ggplot(chi_sq_data, aes(x = ChiSquared)) +
+  geom_histogram(binwidth = 5, color = "black", fill = "blue", alpha = 0.7) +
+  labs(title = "Null Distribution of Chi-Squared Statistic",
+       x = "Chi-Squared Value",
+       y = "Frequency") +
+  theme_minimal()
+```
+
+## **Part B
+```{r}
+set.seed(123)
+sentences_to_test <- c(
+  "She opened the book and started to read the first chapter, eagerly anticipating what might come next.",
+  "Despite the heavy rain, they decided to go for a long walk in the park, crossing the main avenue by the fountain in the center.",
+  "The museum’s new exhibit features ancient artifacts from various civilizations around the world.",
+  "He carefully examined the document, looking for any clues that might help solve the mystery.",
+  "The students gathered in the auditorium to listen to the guest speaker’s inspiring lecture.",
+  "Feeling vexed after an arduous and zany day at work, she hoped for a peaceful and quiet evening at home, cozying up after a quick dinner with some TV, or maybe a book on her upcoming visit to Auckland.",
+  "The chef demonstrated how to prepare a delicious meal using only locally sourced ingredients, focusing mainly on some excellent dinner recipes from Spain.",
+  "They watched the sunset from the hilltop, marveling at the beautiful array of colors in the sky.",
+  "The committee reviewed the proposal and provided many points of useful feedback to improve the project’s effectiveness.",
+  "Despite the challenges faced during the project, the team worked tirelessly to ensure its successful completion, resulting in a product that exceeded everyone’s expectations."
+)
+preprocess_text <- function(sentence) {
+  clean_sentence <- toupper(gsub("[^A-Za-z]", "", sentence))  
+  return(clean_sentence)
+}
+clean_sentences <- sapply(sentences_to_test, preprocess_text)
+count_letters <- function(sentence) {
+  table(strsplit(sentence, "")[[1]]) 
+}
+letter_counts <- lapply(clean_sentences, count_letters)
+compute_chi_squared <- function(letter_count) {
+  sentence_length <- sum(letter_count)
+  if (sentence_length == 0) return(NA)
+  expected_counts <- sentence_length * expected_probs
+  observed_counts <- as.numeric(sapply(names(expected_probs), function(x) ifelse(x %in% names(letter_count), letter_count[x], 0)))
+  chi_squared <- sum((observed_counts - expected_counts)^2 / expected_counts, na.rm=TRUE)
+  
+  return(chi_squared)
+}
+chi_squared_test_values <- sapply(letter_counts, compute_chi_squared, simplify=TRUE, USE.NAMES=FALSE)
+compute_p_value <- function(test_statistic, null_distribution) {
+  mean(null_distribution >= test_statistic) 
+}
+p_values <- sapply(chi_squared_test_values, compute_p_value, null_distribution = chi_squared_values)
+p_values_table <- data.frame(Sentence = 1:10, ChiSquared = round(chi_squared_test_values, 3), PValue = round(p_values, 3))
+p_values_table
+most_suspicious_sentence <- which.min(p_values)
+paste("The most likely LLM-generated sentence is Sentence", most_suspicious_sentence, "with a p-value of", round(p_values[most_suspicious_sentence], 3))
+```
+
+Sentence 6 deviates from the predicted English letter frequency distribution the most, with the lowest p-value (0.009) according to the findings of the Chi-Square test. This implies that Sentence 6 is the watermarked and LLM-generated sentence.
+
+
